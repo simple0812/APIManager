@@ -1,0 +1,36 @@
+.project-tree {
+    color: #6a6a6a;
+    .react-contextmenu-wrapper {
+        color: #6a6a6a;
+    }
+    li .ant-tree-node-content-wrapper {
+        width: calc(100%-18px);
+        &:hover {
+            background-color: transparent;
+            .react-contextmenu-wrapper {
+                color: #fff;
+            }
+        }
+    }
+    li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+        background-color: transparent;
+        .react-contextmenu-wrapper {
+            color: #fff;
+        }
+    }
+    .group-item {
+        display: flex;
+        .react-contextmenu-wrapper {
+            flex: 1;
+        }
+        .action {
+            display: none;
+            width: 20px;
+        }
+        &:hover {
+            .action {
+                display: block;
+            }
+        }
+    }
+}
