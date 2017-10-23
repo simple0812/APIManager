@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import Main from '../components/Main';
+import { getList as getApiList } from '../redux/api';
 import { getList as getTagList } from '../redux/tag';
 import { add as addProject, getList as getProjectList } from '../redux/project';
 import { add as addGroup } from '../redux/group';
@@ -9,6 +10,7 @@ const mapStateToProps = (state) => ({
   addProjectResult: state.project.addResult,
   editProjectResult: state.project.editResult,
   getProjectListResult: state.project.getListResult,
+  getApiListResult: state.api.getListResult,
   addApiResult: state.api.addResult,
   editApiResult: state.api.editResult,
   delApiResult: state.api.delResult,
@@ -20,5 +22,5 @@ const mapStateToProps = (state) => ({
 
 export default connect(
   mapStateToProps,
-  { getTagList, addProject, getProjectList, addGroup }
+  { getTagList, getApiList, addProject, getProjectList, addGroup }
 )(Main);

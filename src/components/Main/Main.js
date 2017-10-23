@@ -27,14 +27,19 @@ class Main extends React.Component {
   }
   componentDidMount() {
     this.props.getProjectList();
+    this.props.getApiList();
   }
 
   componentWillReceiveProps(nextProps) {
     const {
       addProjectResult, getProjectListResult, delApiResult,
       delGroupResult, delProjectResult, addGroupResult, editGroupResult,
-      editProjectResult, delProjecttResult, addApiResult, editApiResult
+      editProjectResult, delProjecttResult, addApiResult, editApiResult,
+      getApiListResult
     } = nextProps;
+    if (addApiResult !== this.props.addApiResult) {
+      this.setState({ apis: addApiResult.data });
+    }
     if (addApiResult !== this.props.addApiResult) {
       if (addApiResult.code === 0) {
         message.success('添加API成功！');
