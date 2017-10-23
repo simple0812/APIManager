@@ -53,6 +53,7 @@ class Main extends React.Component {
           apiParent: addApiResult.data.parent,
         });
         this.props.getProjectList();
+        this.props.getApiList();
       }
     }
     if (editApiResult !== this.props.editApiResult) {
@@ -65,6 +66,7 @@ class Main extends React.Component {
           apiParent: editApiResult.data.parent,
         });
         this.props.getProjectList();
+        this.props.getApiList();
       }
     }
     if (addProjectResult !== this.props.addProjectResult) {
@@ -93,6 +95,7 @@ class Main extends React.Component {
       if (delApiResult.code === 0) {
         message.success('删除API成功！');
         this.props.getProjectList();
+        this.props.getApiList();
       }
     }
     if (delGroupResult !== this.props.delGroupResult) {
@@ -161,11 +164,13 @@ class Main extends React.Component {
   render() {
     const { projects, selectedKeys, apis, condition } = this.state;
     const options = [];
-    apis.forEach(item => {
-      if (item.name.indexOf(condition) !== -1) {
-        options.push(<Option key={item.id}>{item.name}</Option>);
-      }
-    });
+    if (condition && condition.length > 0) {
+      apis.forEach(item => {
+        if (item.name.indexOf(condition) !== -1) {
+          options.push(<Option key={item.id}>{item.name}</Option>);
+        }
+      });
+    }
 
     return (
       <div className="main">
