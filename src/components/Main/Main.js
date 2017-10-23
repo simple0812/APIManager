@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, message } from 'antd';
+import { Form, Input, message, AutoComplete } from 'antd';
 import ApiEdit from '../../containers/ApiEdit';
 import ApiSearch from '../../containers/ApiSearch';
 import ApiDetail from '../../containers/ApiDetail';
@@ -11,10 +11,12 @@ import Icon, { add, setting, about, back, export as exportIcon, save } from '../
 import './less/main.less';
 
 const Search = Input.Search;
+const Option = AutoComplete.Option;
 
 class Main extends React.Component {
   static propTypes = {
-    getProjectList: PropTypes.func.isRequired
+    getProjectList: PropTypes.func.isRequired,
+    getApiList: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -22,7 +24,8 @@ class Main extends React.Component {
     this.state = {
       visible: false,
       projects: [],
-      apiStatus: 0
+      apiStatus: 0,
+      apis: []
     };
   }
   componentDidMount() {
@@ -37,8 +40,8 @@ class Main extends React.Component {
       editProjectResult, delProjecttResult, addApiResult, editApiResult,
       getApiListResult
     } = nextProps;
-    if (addApiResult !== this.props.addApiResult) {
-      this.setState({ apis: addApiResult.data });
+    if (getApiListResult !== this.props.getApiListResult) {
+      this.setState({ apis: getApiListResult.data });
     }
     if (addApiResult !== this.props.addApiResult) {
       if (addApiResult.code === 0) {
@@ -121,7 +124,7 @@ class Main extends React.Component {
   }
 
   handleSearch = (val) => {
-    console.log(val);
+    this.setState({ condition: val });
   }
   handleAddProjectClick = () => {
     this.setState({ visible: true });
@@ -140,22 +143,30 @@ class Main extends React.Component {
     this.setState({ tag, apiStatus: 3 });
   }
   handleSearchSelectedApi = (api, parent) => {
-    this.setState({ selectedKeys: [api.id], api, apiParent: parent, apiStatus: 0 });
+    this.setState({ selectedKeys: [api.id], apiId: api.id, api, apiParent: parent, apiStatus: 0 });
+  }
+  handleSelect = (val) => {
+    this.setState({ selectedKeys: [val], apiId: val, apiStatus: 0 });
   }
   renderApi = () => {
-    const { apiStatus, api, tag } = this.state;
-    if (!api) return;
+    const { apiStatus, api, tag, apiId } = this.state;
+    if (!api && !apiId) return;
     if (apiStatus === 0) {
-      if (api.type) {
-        return <ApiDetail id={api.id} onSelectTag={this.handleSelectTag} />;
-      }
+      return <ApiDetail id={apiId || api.id} onSelectTag={this.handleSelectTag} />;
     } else if (apiStatus === 3) {
       return <ApiSearch tag={tag} onSelected={this.handleSearchSelectedApi} />;
     }
     return <ApiEdit status={apiStatus} api={api} onSave={() => { this.setState({ apiStatus: 0 }) }} />;
   }
   render() {
-    const { projects, selectedKeys } = this.state;
+    const { projects, selectedKeys, apis, condition } = this.state;
+    const options = [];
+    apis.forEach(item => {
+      if (item.name.indexOf(condition) !== -1) {
+        options.push(<Option key={item.id}>{item.name}</Option>);
+      }
+    });
+
     return (
       <div className="main">
         <div className="siderbar">
@@ -164,7 +175,14 @@ class Main extends React.Component {
           </div>
           <div className="nav">
             <div className="search">
-              <Search placeholder="搜索信息" onSearch={this.handleSearch} />
+              <AutoComplete
+                style={{ width: '100%' }}
+                dataSource={options}
+                onSelect={this.handleSelect}
+                onSearch={this.handleSearch}
+              >
+                <Search placeholder="搜索信息" />
+              </AutoComplete>
             </div>
             <ProjectNav
               selectedKeys={selectedKeys}
