@@ -181,7 +181,7 @@ class Main extends React.Component {
     } else if (apiStatus === 3) {
       return <ApiSearch tag={tag} onSelected={this.handleSearchSelectedApi} />;
     }
-    return <ApiEdit status={apiStatus} api={api} />;
+    return <ApiEdit status={apiStatus} api={api} onCancel={() => { this.setState({ apiStatus: 0 }); }} />;
   }
   render() {
     const { projects, selectedKeys, apis, condition, setting, projectOptions, projectSelected } = this.state;

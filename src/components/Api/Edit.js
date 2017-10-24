@@ -7,6 +7,7 @@ import './less/edit.less';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const { TextArea } = Input;
+const { Option } = Select;
 
 class Edit extends React.Component {
   static propTypes = {
@@ -15,8 +16,31 @@ class Edit extends React.Component {
     status: PropTyeps.number.isRequired,
     add: PropTyeps.func.isRequired,
     edit: PropTyeps.func.isRequired,
-    // onSave: PropTyeps.func.isRequired,
+    onCancel: PropTyeps.func.isRequired,
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      tags: [],
+      api: props.api,
+      apiTags: props.api ? props.api.tags.map(item => (item.name)) : []
+    };
+  }
+
+  componentDidMount() {
+    this.props.getTagList();
+  }
+  componentWillReceiveProps(nextProps) {
+    const { getTagListResult, api } = nextProps;
+    if (getTagListResult !== this.props.getTagListResult) {
+      this.setState({ tags: getTagListResult.data });
+    }
+    if (api !== this.props.api) {
+      const apiTags = api.tags.map(item => (item.name));
+      this.setState({ api, apiTags });
+    }
+  }
+
   handleSaveClick = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
@@ -51,7 +75,9 @@ class Edit extends React.Component {
       height: '30px',
       lineHeight: '30px',
     };
-    const { status, api } = this.props;
+    const { status } = this.props;
+    const { tags, api, apiTags } = this.state;
+
     return (
       <div className="api-edit">
         <Form>
@@ -91,8 +117,11 @@ class Edit extends React.Component {
             {...formItemLayout}
           >
             {getFieldDecorator('tags', {
+              initialValue: apiTags
             })(
-              <Select mode="tags" />)}
+              <Select mode="tags">
+                {tags.map(tag => <Option key={tag.id} value={tag.name}>{tag.name}</Option>)}
+              </Select>)}
           </FormItem>
           <FormItem
             label="API状态"
@@ -165,7 +194,7 @@ class Edit extends React.Component {
             {...formItemLayout}
           >
             <Button className="save" onClick={this.handleSaveClick} type="primary">保存</Button>
-            <Button className="cancel" onClick={this.props.onSave}>取消</Button>
+            <Button className="cancel" onClick={this.props.onCancel}>取消</Button>
           </FormItem>
         </Form>
       </div>
