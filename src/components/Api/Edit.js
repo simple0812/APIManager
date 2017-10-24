@@ -23,7 +23,7 @@ class Edit extends React.Component {
     this.state = {
       tags: [],
       api: props.api,
-      apiTags: props.api ? props.api.tags.map(item => (item.name)) : []
+      apiTags: props.api && props.api.tags ? props.api.tags.map(item => (item.name)) : []
     };
   }
 
