@@ -17,15 +17,18 @@ class Detail extends React.Component {
     this.state = {};
     if (props.id) {
       this.props.getById({ id: props.id });
+      console.log('constructor');
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { id, getByIdResult } = nextProps;
     if (id !== this.props.id) {
+      console.log('id change');
       this.props.getById({ id });
     }
     if (getByIdResult !== this.props.getByIdResult) {
+      console.log('getByIdResult change');
       const { api, parent } = getByIdResult.data;
       this.setState({ api, parent });
     }
@@ -48,6 +51,7 @@ class Detail extends React.Component {
   }
   render() {
     const { api, parent } = this.state;
+    console.log(api);
     if (!api) return (<div />);
     return (
       <div className="api-detail">
@@ -66,16 +70,20 @@ class Detail extends React.Component {
             )}
           </div>
         }
-        <div className="item">
-          <div className="label">使用示例</div>
-          <Markdown content={api.use} />
-        </div>
-        <div className="item">
-          <div className="label">发布状态</div>
-          <div className="content">
-            {api.release_status}
+        {api.use &&
+          <div className="item">
+            <div className="label">使用示例</div>
+            <Markdown content={api.use} />
           </div>
-        </div>
+        }
+        {api.release_status &&
+          <div className="item">
+            <div className="label">发布状态</div>
+            <div className="content">
+              {api.release_status}
+            </div>
+          </div>
+        }
         {api.compatibility &&
           <div className="item">
             <div className="label">浏览器兼容性</div>
@@ -84,12 +92,14 @@ class Detail extends React.Component {
             </div>
           </div>
         }
-        <div className="item">
-          <div className="label">参考文献</div>
-          <div className="content">
-            {api.refer_to}
+        {api.refer_to &&
+          <div className="item">
+            <div className="label">参考文献</div>
+            <div className="content">
+              {api.refer_to}
+            </div>
           </div>
-        </div>
+        }
         <div className="version-status">
           {this.getVersionStatus(api.version_status)}
           <div className="triangle-up" />

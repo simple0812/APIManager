@@ -15,7 +15,7 @@ class Edit extends React.Component {
     status: PropTyeps.number.isRequired,
     add: PropTyeps.func.isRequired,
     edit: PropTyeps.func.isRequired,
-    onSave: PropTyeps.func.isRequired,
+    // onSave: PropTyeps.func.isRequired,
   };
   handleSaveClick = () => {
     this.props.form.validateFields((err, values) => {
@@ -32,7 +32,7 @@ class Edit extends React.Component {
             ...values
           });
         }
-        this.props.onSave();
+        // this.props.onSave();
       }
     });
   }

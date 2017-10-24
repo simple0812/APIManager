@@ -67,8 +67,9 @@ class Main extends React.Component {
         this.setState({
           selectedKeys: [editApiResult.data.api.id],
           apiStatus: 0,
-          api: editApiResult.data.api,
-          apiParent: editApiResult.data.parent,
+          apiId: editApiResult.data.api.id,
+          // api: editApiResult.data.api,
+          // apiParent: editApiResult.data.parent,
         });
         this.props.getProjectList();
         this.props.getApiList();
@@ -180,7 +181,7 @@ class Main extends React.Component {
     } else if (apiStatus === 3) {
       return <ApiSearch tag={tag} onSelected={this.handleSearchSelectedApi} />;
     }
-    return <ApiEdit status={apiStatus} api={api} onSave={() => { this.setState({ apiStatus: 0 }) }} />;
+    return <ApiEdit status={apiStatus} api={api} />;
   }
   render() {
     const { projects, selectedKeys, apis, condition, setting, projectOptions, projectSelected } = this.state;
