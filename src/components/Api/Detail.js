@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Tag } from 'antd';
@@ -17,18 +18,15 @@ class Detail extends React.Component {
     this.state = {};
     if (props.id) {
       this.props.getById({ id: props.id });
-      console.log('constructor');
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { id, getByIdResult } = nextProps;
     if (id !== this.props.id) {
-      console.log('id change');
       this.props.getById({ id });
     }
     if (getByIdResult !== this.props.getByIdResult) {
-      console.log('getByIdResult change');
       const { api, parent } = getByIdResult.data;
       this.setState({ api, parent });
     }
@@ -38,9 +36,9 @@ class Detail extends React.Component {
     this.props.onSelectTag(tag);
   }
   getVersionStatus = (status) => {
-    if (status === 1) return 'Working Draft';
-    if (status === 2) return 'Candidate Recommendation';
-    return 'Recommendation';
+    if (status === 1) return <a href="javascript:void(0)" onClick={() => { this.handleTagClick({ version_status: status, name: 'Working Draft' }); }}>Working Draft</a>;
+    if (status === 2) return <a href="javascript:void(0)" onClick={() => { this.handleTagClick({ version_status: status, name: 'Candidate Recommendation' }); }}>Candidate Recommendation</a>;
+    return <a href="javascript:void(0)" onClick={() => { this.handleTagClick({ version_status: status, name: 'Recommendation' }); }}>Recommendation</a>;
   }
   getName = (api, parent) => {
     if (api.type === 1) return `${api.name}()`;
@@ -49,16 +47,20 @@ class Detail extends React.Component {
     if (api.type === 5) return `${api.name}{}`;
     return api.name;
   }
+  getStatus = (status) => {
+    if (status === 1) return (<span />);// <img src={require('./images/current.png')} alt="current" />;
+    if (status === 2) return <img onClick={() => { this.handleTagClick({ status, name: 'new' }); }} src={require('./images/new.png')} alt="new" />;
+    return <img onClick={() => { this.handleTagClick({ status, name: 'deprecated' }); }} src={require('./images/deprecated.png')} alt="deprecated" />;
+  };
   render() {
     const { api, parent } = this.state;
-    console.log(api);
     if (!api) return (<div />);
     return (
       <div className="api-detail">
         <div className="header label">
           <div className="header-content">
             <span>{this.getName(api, parent)}</span>
-            <span className="tip"><Status status={api.status} /></span>
+            <span className="tip">{this.getStatus(api.status)}</span>
           </div>
         </div>
         {api.tags &&

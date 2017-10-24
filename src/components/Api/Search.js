@@ -20,10 +20,21 @@ class Search extends React.Component {
       apis: []
     };
   }
-  componentDidMount() {
+
+  componentWillMount() {
     const { tag } = this.state;
-    this.props.getList({ tag: tag.id });
+    const condition = {};
+    if (tag.id) {
+      condition.tag = tag.id;
+    } else if (tag.version_status) {
+      condition.version_status = tag.version_status;
+    } else {
+      condition.status = tag.status;
+    }
+    this.props.getList(condition);
+    this.setState({ name: tag.name });
   }
+
   componentWillReceiveProps(nextProps) {
     const { getListResult, tag, getByIdResult } = nextProps;
     if (getListResult !== this.props.getListResult) {
@@ -41,11 +52,11 @@ class Search extends React.Component {
     this.props.getById(api);
   }
   render() {
-    const { tag, apis } = this.state;
+    const { apis, name } = this.state;
     return (
       <div className="api-search">
         <div className="header">
-          搜索纬度:{tag.name}
+          搜索纬度:{name}
         </div>
         {apis.map(item => (
           <div key={item.id} className="item">
