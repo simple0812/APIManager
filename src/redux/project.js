@@ -29,31 +29,34 @@ reduxReqs
         item.children = nodes;// eslint-disable-line no-param-reassign
       });
       projects.forEach(item => {
-        const nodes = [];
-        groups.forEach(group => {
-          if (group.project === item.id) {
-            nodes.push(group);
-          }
-        });
-        apis.forEach(api => {
-          if (api.parent === item.id && api.parent_type === 0) {
-            nodes.push({ ...api, showName: getName(api, item) });
-          }
-        });
-        result.push({
-          ...item,
-          type: 0,
-          children: toTree(nodes, item.id)
-        });
+        if (!item.hide) {
+          const nodes = [];
+          groups.forEach(group => {
+            if (group.project === item.id) {
+              nodes.push(group);
+            }
+          });
+          apis.forEach(api => {
+            if (api.parent === item.id && api.parent_type === 0) {
+              nodes.push({ ...api, showName: getName(api, item) });
+            }
+          });
+          result.push({
+            ...item,
+            type: 0,
+            children: toTree(nodes, item.id)
+          });
+        }
       });
       return { ...res, data: result, source: res.data };
     }
   })
   .del('DEL', '/:id')
   .put('EDIT', '/:id')
+  .put('SET', '/set')
   .post('ADD');
 
-export const { del, edit, add, getList }
+export const { del, set, edit, add, getList }
   = reduxReqs.getCreateActions();
 
 export default reduxReqs.getReducers();

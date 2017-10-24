@@ -1,17 +1,18 @@
 /* eslint-disable global-require */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, message, AutoComplete } from 'antd';
+import { Form, Input, message, AutoComplete, Checkbox } from 'antd';
 import ApiEdit from '../../containers/ApiEdit';
 import ApiSearch from '../../containers/ApiSearch';
 import ApiDetail from '../../containers/ApiDetail';
 import ProjectNav from '../../containers/ProjectNav';
 import ProjectEdit from '../../containers/ProjectEdit';
-import Icon, { add, setting, about, back, export as exportIcon, save } from '../Icon';
+import Icon, { add, setting as setIcon, about, back, export as exportIcon, save } from '../Icon';
 import './less/main.less';
 
 const Search = Input.Search;
 const Option = AutoComplete.Option;
+const CheckboxGroup = Checkbox.Group;
 
 class Main extends React.Component {
   static propTypes = {
@@ -38,8 +39,12 @@ class Main extends React.Component {
       addProjectResult, getProjectListResult, delApiResult,
       delGroupResult, delProjectResult, addGroupResult, editGroupResult,
       editProjectResult, delProjecttResult, addApiResult, editApiResult,
-      getApiListResult
+      getApiListResult, setProjectResult
     } = nextProps;
+    if (setProjectResult !== this.props.setProjectResult) {
+      message.success('设置成功！');
+      this.props.getProjectList();
+    }
     if (getApiListResult !== this.props.getApiListResult) {
       this.setState({ apis: getApiListResult.data });
     }
@@ -77,7 +82,15 @@ class Main extends React.Component {
       }
     }
     if (getProjectListResult !== this.props.getProjectListResult) {
-      this.setState({ projects: getProjectListResult.data });
+      const projectOptions = [];
+      const projectSelected = [];
+      getProjectListResult.source.projects.forEach(item => {
+        projectOptions.push({ label: item.name, value: item.id });
+        if (!item.hide) {
+          projectSelected.push(item.id);
+        }
+      });
+      this.setState({ projects: getProjectListResult.data, projectOptions, projectSelected });
     }
     if (editProjectResult !== this.props.editProjectResult) {
       if (editProjectResult.code === 0) {
@@ -151,6 +164,14 @@ class Main extends React.Component {
   handleSelect = (val) => {
     this.setState({ selectedKeys: [val], apiId: val, apiStatus: 0 });
   }
+  handleProjectSetChange = (val) => {
+    this.setState({ projectSelected: val });
+  }
+  handleSetClick = () => {
+    const { projectSelected } = this.state;
+    this.props.set({ ids: projectSelected });
+    this.setState({ setting: false });
+  }
   renderApi = () => {
     const { apiStatus, api, tag, apiId } = this.state;
     if (!api && !apiId) return;
@@ -162,7 +183,7 @@ class Main extends React.Component {
     return <ApiEdit status={apiStatus} api={api} onSave={() => { this.setState({ apiStatus: 0 }) }} />;
   }
   render() {
-    const { projects, selectedKeys, apis, condition } = this.state;
+    const { projects, selectedKeys, apis, condition, setting, projectOptions, projectSelected } = this.state;
     const options = [];
     if (condition && condition.length > 0) {
       apis.forEach(item => {
@@ -189,19 +210,27 @@ class Main extends React.Component {
                 <Search placeholder="搜索信息" />
               </AutoComplete>
             </div>
-            <ProjectNav
-              selectedKeys={selectedKeys}
-              onSelectApi={this.handleSelectApi}
-              onAddApi={this.handleAddApi}
-              onEditApi={this.handleEditApi}
-              onAddGroup={this.handleAddGroup}
-              projects={projects}
-            />
+            {setting ?
+              (
+                <div className="setting">
+                  <CheckboxGroup options={projectOptions} value={projectSelected} onChange={this.handleProjectSetChange} />
+                </div>
+              ) :
+              (
+                <ProjectNav
+                  selectedKeys={selectedKeys}
+                  onSelectApi={this.handleSelectApi}
+                  onAddApi={this.handleAddApi}
+                  onEditApi={this.handleEditApi}
+                  onAddGroup={this.handleAddGroup}
+                  projects={projects}
+                />
+              )}
           </div>
-          {this.state.setting ?
+          {setting ?
             (
               <div className="action">
-                <a href="javascript:void(0)"><Icon glyph={save} /></a>
+                <a href="javascript:void(0)" onClick={this.handleSetClick}><Icon glyph={save} /></a>
                 <a href="javascript:void(0)"><Icon glyph={exportIcon} /></a>
                 <a href="javascript:void(0)" onClick={() => this.setState({ setting: false })}><Icon glyph={back} /></a>
               </div>
@@ -209,7 +238,7 @@ class Main extends React.Component {
             (
               <div className="action">
                 <a href="javascript:void(0)" onClick={this.handleAddProjectClick}><Icon glyph={add} /></a>
-                <a href="javascript:void(0)" onClick={() => this.setState({ setting: true })}> <Icon glyph={setting} /></a>
+                <a href="javascript:void(0)" onClick={() => this.setState({ setting: true })}> <Icon glyph={setIcon} /></a>
                 <a href="javascript:void(0)"><Icon glyph={about} /></a>
               </div>
             )

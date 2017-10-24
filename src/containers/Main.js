@@ -2,12 +2,13 @@ import { connect } from 'react-redux';
 import Main from '../components/Main';
 import { getList as getApiList } from '../redux/api';
 import { getList as getTagList } from '../redux/tag';
-import { add as addProject, getList as getProjectList } from '../redux/project';
+import { add as addProject, set, getList as getProjectList } from '../redux/project';
 import { add as addGroup } from '../redux/group';
 
 const mapStateToProps = (state) => ({
   getTagListResult: state.tag.getListResult,
   addProjectResult: state.project.addResult,
+  setProjectResult: state.project.setResult,
   editProjectResult: state.project.editResult,
   getProjectListResult: state.project.getListResult,
   getApiListResult: state.api.getListResult,
@@ -22,5 +23,5 @@ const mapStateToProps = (state) => ({
 
 export default connect(
   mapStateToProps,
-  { getTagList, getApiList, addProject, getProjectList, addGroup }
+  { getTagList, getApiList, set, addProject, getProjectList, addGroup }
 )(Main);
